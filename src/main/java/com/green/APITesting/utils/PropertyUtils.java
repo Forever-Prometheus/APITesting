@@ -1,4 +1,4 @@
-package com.green.utils;
+package com.green.APITesting.utils;
 
 import java.io.IOException;
 import java.io.InputStream;

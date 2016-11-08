@@ -1,4 +1,4 @@
-package com.green.utils;
+package com.green.APITesting.utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
