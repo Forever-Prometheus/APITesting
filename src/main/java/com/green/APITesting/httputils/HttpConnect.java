@@ -10,36 +10,36 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 public class HttpConnect {
-	
+
 	/**
 	 * int timeout 超时时间默认6000ms
-	 * */
+	 */
 	public int timeout = 6000;
 	/**
-	 * boolean doinput 	是否向服务器端发送数据	默认为true
-	 * */
+	 * boolean doinput 是否向服务器端发送数据 默认为true
+	 */
 	public boolean doinput = true;
 	/**
-	 * boolean dooutput	是否接收服务器端发送的数据	默认为true
-	 * */
+	 * boolean dooutput 是否接收服务器端发送的数据 默认为true
+	 */
 	public boolean dooutput = true;
 	/**
 	 * The HttpURLConnection to connect the website.
-	 * */
+	 */
 	public HttpURLConnection hc = null;
 	/**
 	 * sendCoding String 发送请求的编码方式
-	 * */
+	 */
 	public String sendCoding = "UTF-8";
 	/**
 	 * Parsecode String 本地解析时的编码方式
-	 * */
+	 */
 	public static final String Parsecode = "UTF-8";
 	/**
 	 * 
 	 * */
 	public static String cookie = null;
-	
+
 	public HttpConnect() {
 	}
 
@@ -48,30 +48,58 @@ public class HttpConnect {
 	}
 
 	/**
-	 * @throws Exception
+	 * POST请求初始化
 	 * 
-	 * */
-	public void initCon(String str) throws Exception {
-		
+	 * String str 请求地址
+	 */
+	public void initPOST(String str) throws Exception {
+
 		URL url = new URL(str);
+		HttpURLConnection.setFollowRedirects(false);
 		hc = (HttpURLConnection) url.openConnection();
 		hc.setConnectTimeout(timeout);
 		hc.setDoInput(doinput);
 		hc.setDoOutput(dooutput);
 		hc.setUseCaches(false);
-		hc.setRequestProperty("Content-Type",
-				"application/x-www-form-urlencoded");
-		HttpURLConnection.setFollowRedirects(false);
-		hc.setRequestProperty("Cookie","Cookie: " + HttpConnect.cookie); 
+		hc.setRequestMethod("POST");
+		hc.setRequestProperty("User-Agent",
+				"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/54.0.2840.71 Safari/537.36");
+		hc.setDoOutput(true);
+		hc.setRequestProperty("Content-Type", "application/x-www-form-urlencoded;charset=UTF-8");
+		hc.setRequestProperty("Content-Language", "zh-cn");
+		hc.setRequestProperty("Connection", "keep-alive");
+		hc.setRequestProperty("Cache-Control", "no-cache");
+		hc.setRequestProperty("Cookie", "Cookie: " + HttpConnect.cookie);
+
+	}
+
+	/**
+	 * GET请求初始化
+	 * 
+	 * String str 请求地址
+	 */
+	public void initGET(String str, String param) throws Exception {
+
+		String getUrl = str + "?" + param;
+		URL url = new URL(getUrl);
+		hc = (HttpURLConnection) url.openConnection();
+		hc.setRequestMethod("GET");
+		hc.setRequestProperty("accept", "*/*");
+		hc.setRequestProperty("connection", "Keep-Alive");
+		hc.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+		hc.setRequestProperty("Cookie", "Cookie: " + HttpConnect.cookie);
+		hc.connect();
 	}
 
 	/**
 	 * 发送POST请求
-	 * @param postData	要发送的数据
+	 * 
+	 * @param postData
+	 *            要发送的数据
 	 * @throws Exception
-     */
+	 */
 	public void sendPost(String postData) throws Exception {
-		
+
 		// String send = URLEncoder.encode(postdata, MHttpConnect.Dataencoding);
 		OutputStream os = hc.getOutputStream();
 		OutputStreamWriter osw = new OutputStreamWriter(os, this.sendCoding);
@@ -80,15 +108,16 @@ public class HttpConnect {
 		osw.close();
 		os.close();
 	}
-	
+
 	/**
 	 * 读取数据
 	 * 
 	 * @return String 读取的内容
-	 * */
+	 */
 	public String readData() throws IOException {
-		
+
 		int code = hc.getResponseCode();
+		System.out.println(code);
 		StringBuffer sb = null;
 		if (code == HttpURLConnection.HTTP_OK) {
 			sb = new StringBuffer();
@@ -99,7 +128,7 @@ public class HttpConnect {
 			String line = null;
 			do {
 				line = br.readLine();// 读取内容
-				
+
 				if (line != null && !line.equals("")) {
 					line = line.trim();
 					line = line.replaceAll("&nbsp;", "");
@@ -110,6 +139,7 @@ public class HttpConnect {
 			br.close();
 			isr.close();
 			is.close();
+			System.out.println(sb.toString());
 			return sb.toString();
 		} else
 			return null;
@@ -119,8 +149,8 @@ public class HttpConnect {
 	 * 断开HTTP连接
 	 */
 	public void killconnet() {
-		
+
 		hc.disconnect();
 	}
-	
+
 }

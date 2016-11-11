@@ -23,7 +23,7 @@ public class OutputFile {
         BufferedWriter bw = null;
         try {
             os = new FileOutputStream(dst, isAppend);
-            fos = new OutputStreamWriter(os, "gbk");
+            fos = new OutputStreamWriter(os, "UTF-8");
             bw = new BufferedWriter(fos);
             if (content != null)
                 bw.write(content);

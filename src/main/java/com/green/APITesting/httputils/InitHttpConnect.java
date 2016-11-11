@@ -21,7 +21,7 @@ public class InitHttpConnect {
 	/**
 	 * String Base url
 	 */
-	private static final String baseurl = "http://rexian.beijing.gov.cn/index.jsp?agMode=1";
+	private static final String baseurl = "https://portal.hiar.io/account/signin/";
 	/**
 	 * sendCoding String 发送请求的编码方式
 	 */
@@ -66,7 +66,6 @@ public class InitHttpConnect {
 	 */
 	public void sendPost(String postdata) throws Exception {
 
-		// String send = URLEncoder.encode(postdata, MHttpConnect.Dataencoding);
 		OutputStream os = hc.getOutputStream();
 		OutputStreamWriter osw = new OutputStreamWriter(os, this.sendCoding);
 		osw.write(postdata);
@@ -114,6 +113,20 @@ public class InitHttpConnect {
 		Iterator<String> it = coolist.iterator();
 		StringBuffer sbu = new StringBuffer();
 		sbu.append("eos_style_cookie=default; ");
+		while (it.hasNext()) {
+			sbu.append(it.next() + " ");
+		}
+		System.out.println(sbu.toString());
+		return sbu.toString();
+	}
+
+	public String getResponse(String key) {
+
+		Map<String, List<String>> maps = hc.getHeaderFields();
+		List<String> coolist = maps.get(key);
+		Iterator<String> it = coolist.iterator();
+		StringBuffer sbu = new StringBuffer();
+		sbu.append(key + ":");
 		while (it.hasNext()) {
 			sbu.append(it.next() + " ");
 		}

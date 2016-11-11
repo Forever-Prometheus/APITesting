@@ -3,6 +3,7 @@
 	<name>APITesting</name>
 	<comment></comment>
 	<projects>
+		<project>RedAndroidAutoTest</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>
