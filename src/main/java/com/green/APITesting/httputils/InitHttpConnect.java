@@ -12,6 +12,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.green.APITesting.datautils.JsonUtils;
+
 /**
  * @author Dieson Zuo
  * @date Oct 11, 2016 3:21:37 PM
@@ -99,7 +101,6 @@ public class InitHttpConnect {
 			br.close();
 			isr.close();
 			is.close();
-			System.out.println(sb.toString());
 			return sb.toString();
 		} else
 			return null;
@@ -116,22 +117,38 @@ public class InitHttpConnect {
 		while (it.hasNext()) {
 			sbu.append(it.next() + " ");
 		}
-		System.out.println(sbu.toString());
 		return sbu.toString();
 	}
+	
+	public String getToken() throws Exception {
+		
+		String response = this.readData();
+		Map<String, Object> map = JsonUtils.strToMap(response);
+		return map.get("token").toString();
+	}
+	
+	/**
+	 * 获取token 除去空格
+	 * 
+	 * @param url
+	 * @param postData
+	 * @return
+	 */
+	public String token(String URL, String data) throws Exception {
 
-	public String getResponse(String key) {
+		String res = null;
+		try {
 
-		Map<String, List<String>> maps = hc.getHeaderFields();
-		List<String> coolist = maps.get(key);
-		Iterator<String> it = coolist.iterator();
-		StringBuffer sbu = new StringBuffer();
-		sbu.append(key + ":");
-		while (it.hasNext()) {
-			sbu.append(it.next() + " ");
+			this.initCon(URL);
+			this.sendPost(data);
+			res = this.getToken();
+			res = res.trim();
+			this.killconnet();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
-		System.out.println(sbu.toString());
-		return sbu.toString();
+		return res;
 	}
 
 	/**
@@ -150,7 +167,6 @@ public class InitHttpConnect {
 			this.sendPost(data);
 			res = this.getCookie();
 			res = res.trim();
-			this.readData();
 			this.killconnet();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

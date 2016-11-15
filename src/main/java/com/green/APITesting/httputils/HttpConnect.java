@@ -9,6 +9,8 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import com.green.APITesting.logutils.OutputFile;
+
 public class HttpConnect {
 
 	/**
@@ -35,11 +37,22 @@ public class HttpConnect {
 	 * Parsecode String 本地解析时的编码方式
 	 */
 	public static final String Parsecode = "UTF-8";
-	/**
-	 * 
-	 * */
+	
 	public static String cookie = null;
+	
+	public static String token = null;
+	
+	private final String format = ".html";
+	/**
+	 * String path 存储报文路径
+	 */
+	private final String path = System.getProperty("user.dir") + "\\HtmlData\\";
+	/**
+	 * String buffer 返回报文
+	 */
+	public String buffer = null;
 
+	
 	public HttpConnect() {
 	}
 
@@ -69,6 +82,7 @@ public class HttpConnect {
 		hc.setRequestProperty("Content-Language", "zh-cn");
 		hc.setRequestProperty("Connection", "keep-alive");
 		hc.setRequestProperty("Cache-Control", "no-cache");
+		hc.setRequestProperty("token", HttpConnect.token);
 		hc.setRequestProperty("Cookie", "Cookie: " + HttpConnect.cookie);
 
 	}
@@ -87,6 +101,7 @@ public class HttpConnect {
 		hc.setRequestProperty("accept", "*/*");
 		hc.setRequestProperty("connection", "Keep-Alive");
 		hc.setRequestProperty("user-agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.1;SV1)");
+		hc.setRequestProperty("token", HttpConnect.token);
 		hc.setRequestProperty("Cookie", "Cookie: " + HttpConnect.cookie);
 		hc.connect();
 	}
@@ -117,7 +132,6 @@ public class HttpConnect {
 	public String readData() throws IOException {
 
 		int code = hc.getResponseCode();
-		System.out.println(code);
 		StringBuffer sb = null;
 		if (code == HttpURLConnection.HTTP_OK) {
 			sb = new StringBuffer();
@@ -131,7 +145,7 @@ public class HttpConnect {
 
 				if (line != null && !line.equals("")) {
 					line = line.trim();
-					line = line.replaceAll("&nbsp;", "");
+					//line = line.replaceAll("&nbsp;", "");
 					sb.append(line);
 				}
 			} while (line != null);
@@ -139,10 +153,30 @@ public class HttpConnect {
 			br.close();
 			isr.close();
 			is.close();
-			System.out.println(sb.toString());
 			return sb.toString();
 		} else
 			return null;
+	}
+	
+	public void testConnect(String url, String postdata, String apiName) throws IOException {
+		
+		String filename = path + apiName + format;
+		
+		try {
+			// HttpConnect初始化
+			this.initPOST(url);
+			// 设置POST请求数据
+			this.sendPost(postdata);
+			// 读取报文
+			this.buffer = this.readData();
+			
+			OutputFile fop = new OutputFile();
+			fop.writeFile(filename, buffer);
+			this.killconnet();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	/**
