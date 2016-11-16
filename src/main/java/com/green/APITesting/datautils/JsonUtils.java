@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import com.green.APITesting.utils.Utils;
+
 import net.sf.json.JSONObject;
 
 /**
@@ -21,6 +23,12 @@ public class JsonUtils {
 	public static JSONObject listToJSON(List<String> list) {
 		JSONObject jsonObject = JSONObject.fromObject(list);
 		return jsonObject;
+	}
+	
+	public static Map<String, Object> txtToMap(String filePath) {
+		
+		String str = Utils.readTxtFile(filePath);
+		return JsonUtils.strToMap(str);
 	}
 
 	public static Map<String, Object> strToMap(String str) {
