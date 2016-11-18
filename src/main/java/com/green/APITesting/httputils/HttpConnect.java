@@ -37,22 +37,16 @@ public class HttpConnect {
 	 * Parsecode String 本地解析时的编码方式
 	 */
 	public static final String Parsecode = "UTF-8";
-	
-	public static String cookie = null;
-	
-	public static String token = null;
-	
-	private final String format = ".html";
-	/**
-	 * String path 存储报文路径
-	 */
-	private final String path = System.getProperty("user.dir") + "\\HtmlData\\";
-	/**
-	 * String buffer 返回报文
-	 */
-	public String buffer = null;
 
-	
+	public static String cookie = null;
+
+	public static String token = null;
+
+	/**
+	 * String fileName 存储报文路径
+	 */
+	public static String fileName = null;
+
 	public HttpConnect() {
 	}
 
@@ -145,7 +139,7 @@ public class HttpConnect {
 
 				if (line != null && !line.equals("")) {
 					line = line.trim();
-					//line = line.replaceAll("&nbsp;", "");
+					line = line.replaceAll("&nbsp;", "");
 					sb.append(line);
 				}
 			} while (line != null);
@@ -153,25 +147,34 @@ public class HttpConnect {
 			br.close();
 			isr.close();
 			is.close();
+			
+			// 输出报文为html
+			OutputFile fop = new OutputFile();
+			String htmlPath = HttpConnect.fileName + ".html";
+			fop.writeFile(htmlPath, sb.toString());
+			// 输出报文为txt
+			String contentType = hc.getContentType();
+			if (contentType.contains("json")) {
+
+				String txtPath = HttpConnect.fileName + ".txt";
+				fop.writeFile(txtPath, sb.toString());
+			}
 			return sb.toString();
 		} else
 			return null;
 	}
-	
-	public void testConnect(String url, String postdata, String apiName) throws IOException {
-		
-		String filename = path + apiName + format;
-		
+
+	public void testConnect(String url, String postdata, String path) throws IOException {
+
+		HttpConnect.fileName = path;
 		try {
 			// HttpConnect初始化
 			this.initPOST(url);
 			// 设置POST请求数据
 			this.sendPost(postdata);
 			// 读取报文
-			this.buffer = this.readData();
-			
-			OutputFile fop = new OutputFile();
-			fop.writeFile(filename, buffer);
+			this.readData();
+
 			this.killconnet();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
